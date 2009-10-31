@@ -1,0 +1,66 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=2834
+
+*template* is a Vim plugin to read the template file automatically when the
+edit of the file is newly started.  Template file is selected to match the
+file name to open. Also, you can run any command after the open.
+
+
+Example:
+If the template files are located as follows:
+
+ ~/.vim/template
+ |-- doc
+ |   `-- template.txt
+ |-- plugin
+ |   `-- template.vim
+ |-- template.java
+ |-- template.rb
+ |-- template.vim
+ |-- template_spec.rb
+ `-- templateTest.java
+
+Template is loaded as follows.
+
+Open file                       Template that is loaded
+---------                       -----------------------
+foo.vim                         template.vim
+plugin/foo.vim                  plugin/template.vim
+Foo.java                        template.java
+FooTest.java                    templateTest.java
+foo.rb                          template.rb
+foo_spec.rb                     template_spec.rb
+foo.txt                         (None)
+doc/foo.txt                     doc/template.txt
+
+
+And, you can execute commands when template loaded.
+
+Examples:
+Defines replacing keywords:
+    autocmd User plugin-template-loaded call s:template_keywords()
+    function! s:template_keywords()
+      %s/<+FILE NAME+>/\=expand('%:t')/g
+      %s/<+DATE+>/\=strftime('%Y-%m-%d')/g
+      " And more...
+    endfunction
+
+Evaluate by vim and expand the inside of <%= %>:
+    autocmd User plugin-template-loaded
+    \ silent %s/<%=\(.\{-}\)%>/\=eval(submatch(1))/ge
+
+Expand the date it is written in the following template.
+    <%= strftime('%Y-%m-%d') %>
+
+Move the cursor to <+CURSOR+>:
+    autocmd User plugin-template-loaded
+    \    if search('<+CURSOR+>')
+    \  |   execute 'normal! "_da>'
+    \  | endif
+
+Filtered by an external command:
+    autocmd User plugin-template-loaded silent! :%!erb
+    autocmd User plugin-template-loaded silent! :%!php
+
+
+Latest Version:
+http://github.com/thinca/vim-template
