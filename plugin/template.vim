@@ -1,5 +1,5 @@
 " Simple and flexible template engine.
-" Version: 0.2.0
+" Version: 0.2.1
 " Author : thinca <thinca+vim@gmail.com>
 " License: Creative Commons Attribution 2.1 Japan License
 "          <http://creativecommons.org/licenses/by/2.1/jp/deed.en>
@@ -23,7 +23,9 @@ function! s:load_template(file, force) " {{{2
   let tmpl = s:search_template(a:file)
   if tmpl == ''
     if &verbose && !empty(a:file)
-      echoerr 'Template file not found'
+      echohl ErrorMsg
+      echomsg 'template: The template file is not found.'
+      echohl None
     endif
     return
   endif
@@ -51,7 +53,7 @@ function! s:load_template(file, force) " {{{2
 
     call writefile(split(code, "\n"), temp)
     try
-      silent doautocmd User plugin-template-preexec
+      doautocmd User plugin-template-preexec
       execute 'source' temp
     catch
       echoerr v:exception
@@ -59,7 +61,7 @@ function! s:load_template(file, force) " {{{2
       call delete(temp)
     endtry
   endif
-  silent doautocmd User plugin-template-loaded
+  doautocmd User plugin-template-loaded
 endfunction
 
 
@@ -152,6 +154,8 @@ command! -nargs=? -bang -bar -complete=customlist,s:TemplateLoad_complete
 augroup plugin-template
   autocmd!
   autocmd BufReadPost,BufNewFile * TemplateLoad
+  " To avoid the error message when there is no event.
+  autocmd User plugin-template-* :
 augroup END
 
 
