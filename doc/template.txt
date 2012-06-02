@@ -1,9 +1,8 @@
 *template.txt*	Simple and flexible template engine.
 
-Version: 0.2.1
+Version: 0.3.0
 Author : thinca <thinca+vim@gmail.com>
-License: Creative Commons Attribution 2.1 Japan License
-         <http://creativecommons.org/licenses/by/2.1/jp/deed.en>
+License: zlib License
 
 ==============================================================================
 CONTENTS					*template-contents*
@@ -14,9 +13,11 @@ USAGE				|template-usage|
   COMMAND EXECUTION		  |template-command-execution|
 INTERFACE			|template-interface|
   COMMANDS			  |template-commands|
+  FUNCTIONS			  |template-functions|
   EVENTS			  |template-events|
   OPTIONS			  |template-options|
 CHANGELOG			|template-changelog|
+
 
 
 ==============================================================================
@@ -25,6 +26,13 @@ INTRODUCTION					*template-introduction*
 *template* is a Vim plugin to read the template file automatically when the
 edit of the file is newly started.  Template file is selected to match the
 file name to open. Also, you can run any command after the open.
+
+Requirements:
+- Vim 7.3 or later
+
+Latest version:
+https://github.com/thinca/vim-template
+
 
 
 ==============================================================================
@@ -159,17 +167,32 @@ INTERFACE					*template-interface*
 ------------------------------------------------------------------------------
 COMMANDS					*template-commands*
 
-:TemplateLoad[!] {pattern}			*:TemplateLoad*
-			Load the template to match the pattern specified.  If
-			the buffer is not empty, do nothing.  When [!] is
-			specified, it reads compulsorily.
+:[line]TemplateLoad[!] [pattern]		*:TemplateLoad*
+	Loads a template which matches to [pattern] to [line].  If [pattern]
+	is omitted, current buffer is used.  If the buffer is not empty, does
+	nothing.  However, when [!] is specified, reads compulsorily.
 
-Example: Open the template associated with FileType >
+Example: Opens a template associated with FileType >
 	autocmd FileType * execute 'TemplateLoad /filetype/' . &l:filetype
-And, the template files are put as follows: >
+And, template files are put as follows: >
 	~/.vim/template/filetype/perl
 	~/.vim/template/filetype/html
 			:
+
+------------------------------------------------------------------------------
+FUNCTIONS					*template-functions*
+
+						*template#load()*
+template#load([{pattern} [, {line} [, {force}]]])
+	A function version of |:Templateload|.
+
+template#search({pattern})			*template#search()*
+	Searchs a template file from {pattern}.  Returns the first matched
+	file. Otherwise returns an empty string.
+
+template#loading()				*template#loading()*
+	Returns the name of template file being loaded.  This can be used in
+	|User:plugin-template-preexec| and |User:plugin-template-loaded|.
 
 ------------------------------------------------------------------------------
 EVENTS						*template-events*
@@ -206,6 +229,14 @@ g:template_free_pattern				*g:template_free_pattern*
 
 ==============================================================================
 CHANGELOG					*template-changelog*
+
+0.3.0	2012-06-02
+	- autoloadize.
+	  - Added |template#load()|.
+	  - Added |template#search()|.
+	  - Added |template#loading()|.
+	- Added [line] support to |:Templateload|.
+	- Use |<nomodeline>| if possible.
 
 0.2.1	2010-06-10
 	- It was made not to become an error even when 'verbose' was one or
